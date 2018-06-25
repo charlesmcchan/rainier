@@ -1,0 +1,6 @@
+{
+	"cniVersion": "0.2.0",
+	"name": "rainier",
+	"type": "rainier",
+	"publicBridgeName": "rainier-public"
+}
