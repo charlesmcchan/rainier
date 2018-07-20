@@ -16,7 +16,7 @@ import (
 )
 
 const DefaultMTU = 1500
-const HostInterfacesFilePath = "/tmp/rainier.json"
+const HostInterfaceJson = "/tmp/rainier.json"
 
 var hostInterfaces = make(map[string]interface{})
 
@@ -76,12 +76,14 @@ func cmdDel(args *skel.CmdArgs) error {
 
 	// Update JSON file and remove port from OVS
 	readHostInterfacesFromFile()
-	hostIfName := hostInterfaces[args.ContainerID].(string)
-	if err := deleteOvsPort(config.PublicBridgeName, hostIfName); err != nil {
-		return err
+	hostIfName := hostInterfaces[args.ContainerID]
+	if hostIfName != nil {
+		if err := deleteOvsPort(config.PublicBridgeName, hostIfName.(string)); err != nil {
+			return err
+		}
+		delete(hostInterfaces, args.ContainerID)
+		writeHostInterfacesToFile()
 	}
-	delete(hostInterfaces, args.ContainerID)
-	writeHostInterfacesToFile()
 
 	return nil
 }
@@ -154,7 +156,7 @@ func deleteOvsPort(bridgeName string, hostIfName string) error {
 }
 
 func readHostInterfacesFromFile() error {
-	jsonByte, err := ioutil.ReadFile(HostInterfacesFilePath)
+	jsonByte, err := ioutil.ReadFile(HostInterfaceJson)
 	if err == nil {
 		if err := json.Unmarshal(jsonByte, &hostInterfaces); err != nil {
 			return fmt.Errorf("Fail to decode host interface JSON")
@@ -168,7 +170,7 @@ func writeHostInterfacesToFile() error {
 	if err != nil {
 		return fmt.Errorf("Fail to encode host interface JSON")
 	}
-	if err := ioutil.WriteFile(HostInterfacesFilePath, jsonByte, 0644); err != nil {
+	if err := ioutil.WriteFile(HostInterfaceJson, jsonByte, 0644); err != nil {
 		return fmt.Errorf("Fail to write host interface JSON")
 	}
 	return nil
