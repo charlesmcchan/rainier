@@ -7,10 +7,11 @@ Create one network interface for each container and attach it to an OVS bridge
 ## How it is named
 I have a bad sense of naming a project and I was eating rainier cherries while coding
 
-## TODO
+## Note
+Kubernetes does not take DNS configuration returned by CNI. Need to configure DNS in POD configuration
+
+## Todo
 - Test cases
-- Secondary network interface (private network)
-- IP address management (IPAM)
 
 ## Reference
 - [CNI](https://github.com/containernetworking/cni)

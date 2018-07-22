@@ -3,6 +3,12 @@
 	"ignore": "test",
 	"package": [
 		{
+			"checksumSHA1": "woc+nCvxNpztMydIUBd8MfYj+fQ=",
+			"path": "github.com/containernetworking/cni/pkg/invoke",
+			"revision": "e67bb289cccfcad352b92c5234a1610b105846e0",
+			"revisionTime": "2018-07-05T21:07:35Z"
+		},
+		{
 			"checksumSHA1": "O7JSpVlZNZIiiI6pspfw/HmzW1g=",
 			"path": "github.com/containernetworking/cni/pkg/skel",
 			"revision": "aed7a2f2a1ee6795cf4914a9cb5419305208131c",
@@ -39,6 +45,12 @@
 			"revisionTime": "2018-06-20T15:49:42Z"
 		},
 		{
+			"checksumSHA1": "Rf7j5ziEpzmn3Ym+6xaEqsB6Mk4=",
+			"path": "github.com/containernetworking/plugins/pkg/ipam",
+			"revision": "21e3e4ec01db121047601bd7308f0863bc06ee68",
+			"revisionTime": "2018-07-18T14:02:48Z"
+		},
+		{
 			"checksumSHA1": "ZM0SnLIE5+Clczod2Md8mVGMz/M=",
 			"path": "github.com/containernetworking/plugins/pkg/ns",
 			"revision": "696b1f9ab1022c34e1514e0e29bf84bb9179899f",
@@ -49,6 +61,12 @@
 			"path": "github.com/containernetworking/plugins/pkg/utils/hwaddr",
 			"revision": "696b1f9ab1022c34e1514e0e29bf84bb9179899f",
 			"revisionTime": "2018-06-20T15:49:42Z"
+		},
+		{
+			"checksumSHA1": "eVojiWsh48y175NN7Newtb9lmxQ=",
+			"path": "github.com/containernetworking/plugins/pkg/utils/sysctl",
+			"revision": "21e3e4ec01db121047601bd7308f0863bc06ee68",
+			"revisionTime": "2018-07-18T14:02:48Z"
 		},
 		{
 			"checksumSHA1": "XThyw/FZ+eIbebe6zQrpJuIxHgw=",

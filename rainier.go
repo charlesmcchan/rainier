@@ -11,6 +11,7 @@ import (
 	"github.com/containernetworking/cni/pkg/types/current"
 	"github.com/containernetworking/cni/pkg/version"
 	"github.com/containernetworking/plugins/pkg/ip"
+	"github.com/containernetworking/plugins/pkg/ipam"
 	"github.com/containernetworking/plugins/pkg/ns"
 	"github.com/digitalocean/go-openvswitch/ovs"
 )
@@ -23,8 +24,6 @@ var hostInterfaces = make(map[string]interface{})
 type RainierConfig struct {
 	types.NetConf
 	PublicBridgeName string `json:"publicBridgeName"`
-	// TODO Add private interface
-	// PrivateBridgeName string `json:"privateBridgeName"`
 }
 
 func cmdAdd(args *skel.CmdArgs) error {
@@ -37,10 +36,6 @@ func cmdAdd(args *skel.CmdArgs) error {
 	if err := createOvsBr(config.PublicBridgeName); err != nil {
 		return err
 	}
-	// TODO Add private interface
-	// if err := createOvsBr(config.PrivateBridgeName); err != nil {
-	// 	return err
-	// }
 
 	// Get name space
 	netns, err := ns.GetNS(args.Netns)
@@ -50,7 +45,7 @@ func cmdAdd(args *skel.CmdArgs) error {
 	defer netns.Close()
 
 	// Create veth
-	hostInterface, _, err := createVeth(netns, args.IfName)
+	hostInterface, containerInterface, err := createVeth(netns, args.IfName)
 	if err != nil {
 		return err
 	}
@@ -60,17 +55,56 @@ func cmdAdd(args *skel.CmdArgs) error {
 		return err
 	}
 
+	// Invoke IPAM
+	r, err := ipam.ExecAdd(config.IPAM.Type, args.StdinData)
+	if err != nil {
+		return err
+	}
+
+	// Convert IPAM result to current Result type
+	result, err := current.NewResultFromResult(r)
+	if err != nil {
+		return err
+	}
+
+	if len(result.IPs) == 0 {
+		return fmt.Errorf("IPAM plugin returns no IP address")
+	}
+
+	// Associate all IPs to the first interface
+	for _, ip := range result.IPs {
+		ip.Interface = current.Int(0)
+	}
+
+	// Set interface in result
+	result.Interfaces = []*current.Interface{containerInterface}
+
+	// Apply IP address to the container interface
+	err = netns.Do(func(_ ns.NetNS) error {
+		return ipam.ConfigureIface(containerInterface.Name, result)
+	})
+	if err != nil {
+		return err
+	}
+
+	// Set DNS in result
+	result.DNS = config.DNS
+
 	// Update JSON file
 	readHostInterfacesFromFile()
 	hostInterfaces[args.ContainerID] = hostInterface.Name
 	writeHostInterfacesToFile()
 
-	return nil
+	return types.PrintResult(result, config.NetConf.CNIVersion)
 }
 
 func cmdDel(args *skel.CmdArgs) error {
 	config := &RainierConfig{}
 	if err := json.Unmarshal(args.StdinData, config); err != nil {
+		return err
+	}
+
+	if err := ipam.ExecDel(config.IPAM.Type, args.StdinData); err != nil {
 		return err
 	}
 

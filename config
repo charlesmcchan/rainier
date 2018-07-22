@@ -1,6 +1,24 @@
 {
-	"cniVersion": "0.2.0",
-	"name": "rainier",
-	"type": "rainier",
-	"publicBridgeName": "rainier-public"
+    "cniVersion": "0.2.0",
+    "name": "rainier",
+    "type": "rainier",
+    "publicBridgeName": "rainier-public",
+    "ipam": {
+        "type": "host-local",
+        "ranges": [
+            [
+                {
+                "subnet": "10.94.87.0/24",
+                "rangeStart": "10.94.87.1",
+                "rangeEnd": "10.94.87.250",
+                "gateway": "10.94.87.254"
+                }
+            ]
+        ],
+        "routes": [
+            { "dst": "0.0.0.0/0" }
+        ]
+    },
+    "dns": {
+    }
 }
