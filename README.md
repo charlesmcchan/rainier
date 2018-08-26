@@ -3,17 +3,18 @@ Rainier is a container network interface (CNI) plugin that creates one network i
 
 ## How to use
 ### Prerequisite
-Install `golang`, `govendor`, `kubernetes`, and `kubernetes-cni`
+- golang >= 1.11
+- kubernetes
+- kubernetes-cni
 
 ### Fetch rainier source code
 ```bash
-go get -u github.com/charlesmchan/rainier
+git clone git@github.com:charlesmchan/rainier.git
 ```
 
 ### Build
 ```bash
-cd $GOPATH/src/github.com/charlesmchan/rainier
-govendor sync
+cd rainier
 go build rainier.go
 ```
 ### Link binary and configuration to CNI folder
